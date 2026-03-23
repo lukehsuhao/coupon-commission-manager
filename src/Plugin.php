@@ -23,6 +23,13 @@ class Plugin {
     }
 
     private function init(): void {
+        // Declare HPOS compatibility
+        add_action( 'before_woocommerce_init', function () {
+            if ( class_exists( \Automattic\WooCommerce\Utilities\FeaturesUtil::class ) ) {
+                \Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility( 'custom_order_tables', CCM_PLUGIN_FILE, true );
+            }
+        } );
+
         if ( ! $this->check_woocommerce() ) {
             return;
         }

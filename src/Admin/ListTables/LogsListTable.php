@@ -140,7 +140,12 @@ class LogsListTable extends \WP_List_Table {
     }
 
     public function column_order_id( $item ): string {
-        $url = admin_url( 'post.php?post=' . $item->order_id . '&action=edit' );
+        $order = wc_get_order( $item->order_id );
+        if ( $order ) {
+            $url = $order->get_edit_order_url();
+        } else {
+            $url = admin_url( 'post.php?post=' . $item->order_id . '&action=edit' );
+        }
         return '<a href="' . esc_url( $url ) . '">#' . esc_html( $item->order_id ) . '</a>';
     }
 

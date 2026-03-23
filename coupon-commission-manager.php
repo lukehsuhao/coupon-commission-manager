@@ -1,11 +1,11 @@
 <?php
 /**
- * Plugin Name: Coupon Commission Manager
- * Plugin URI:  https://developvi.com
+ * Plugin Name: WooCommerce 折扣碼分潤管理 — Coupon Commission Manager
+ * Plugin URI:  https://powerhouse.cloud
  * Description: WooCommerce 折扣碼分潤管理 — 追蹤折扣碼分潤、管理夥伴付款狀態、匯出 CSV。
  * Version:     1.0.0
- * Author:      DevelopVI
- * Author URI:  https://developvi.com
+ * Author:      Powerhouse
+ * Author URI:  https://powerhouse.cloud
  * Text Domain: ccm
  * Domain Path: /languages
  * Requires at least: 5.8

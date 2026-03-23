@@ -1,5 +1,5 @@
 {
-    "name": "developvi/coupon-commission-manager",
+    "name": "powerhouse/coupon-commission-manager",
     "description": "WooCommerce coupon-based affiliate commission tracking and payout management.",
     "type": "wordpress-plugin",
     "autoload": {
