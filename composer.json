@@ -1,0 +1,13 @@
+{
+    "name": "developvi/coupon-commission-manager",
+    "description": "WooCommerce coupon-based affiliate commission tracking and payout management.",
+    "type": "wordpress-plugin",
+    "autoload": {
+        "psr-4": {
+            "CouponCommissionManager\\": "src/"
+        }
+    },
+    "require": {
+        "php": "^7.4"
+    }
+}

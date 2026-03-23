@@ -1,0 +1,133 @@
+/* Coupon Commission Manager - Admin Styles */
+
+/* Summary Cards */
+.ccm-cards {
+    display: flex;
+    gap: 16px;
+    margin: 20px 0;
+    flex-wrap: wrap;
+}
+
+.ccm-card {
+    background: #fff;
+    border: 1px solid #c3c4c7;
+    border-radius: 4px;
+    padding: 16px 24px;
+    min-width: 180px;
+    flex: 1;
+}
+
+.ccm-card h3 {
+    margin: 0 0 4px;
+    font-size: 13px;
+    color: #646970;
+    font-weight: 400;
+}
+
+.ccm-card-value {
+    margin: 0;
+    font-size: 28px;
+    font-weight: 600;
+    color: #1d2327;
+}
+
+.ccm-card-value.ccm-unpaid {
+    color: #dba617;
+}
+
+.ccm-card-value.ccm-paid {
+    color: #00a32a;
+}
+
+/* Status Badges */
+.ccm-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1.5;
+}
+
+.ccm-badge-active,
+.ccm-badge-paid {
+    background: #edfaef;
+    color: #00a32a;
+}
+
+.ccm-badge-inactive,
+.ccm-badge-void {
+    background: #fcf0f1;
+    color: #d63638;
+}
+
+.ccm-badge-unpaid {
+    background: #fef8ee;
+    color: #dba617;
+}
+
+/* Table tweaks */
+td.ccm-unpaid {
+    color: #dba617;
+    font-weight: 600;
+}
+
+/* Date filter */
+.ccm-date-filter {
+    margin: 16px 0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* Filters bar */
+.ccm-filters {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.ccm-filters label {
+    font-weight: 500;
+}
+
+/* Delete link */
+.ccm-delete-link {
+    color: #b32d2e;
+}
+
+.ccm-delete-link:hover {
+    color: #a00;
+}
+
+/* Form required marker */
+.required {
+    color: #d63638;
+}
+
+/* Autocomplete highlight */
+.ui-autocomplete {
+    max-height: 200px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    z-index: 100100;
+}
+
+/* Rules table */
+.ccm-rules-table {
+    max-width: 700px;
+}
+
+.ccm-rules-table td {
+    vertical-align: middle;
+    padding: 8px;
+}
+
+.ccm-rules-table input[type="number"] {
+    width: 120px;
+}
+
+.ccm-rule-row:hover {
+    background: #f6f7f7;
+}
