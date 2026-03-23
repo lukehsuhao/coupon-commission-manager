@@ -6,6 +6,8 @@ use CouponCommissionManager\Admin\Menu;
 use CouponCommissionManager\Admin\Assets;
 use CouponCommissionManager\Hooks\WooCommerceHooks;
 use CouponCommissionManager\Services\CsvExporter;
+use CouponCommissionManager\Frontend\ApplicationForm;
+use CouponCommissionManager\Database\Schema;
 
 class Plugin {
 
@@ -34,6 +36,13 @@ class Plugin {
             return;
         }
 
+        // DB migration for updates
+        $db_version = get_option( 'ccm_db_version', '0' );
+        if ( version_compare( $db_version, CCM_VERSION, '<' ) ) {
+            Schema::create_tables();
+            update_option( 'ccm_db_version', CCM_VERSION );
+        }
+
         // Admin
         if ( is_admin() ) {
             Menu::register();
@@ -45,6 +54,9 @@ class Plugin {
 
         // CSV Export endpoint
         CsvExporter::register();
+
+        // Frontend shortcode
+        ApplicationForm::register();
     }
 
     private function check_woocommerce(): bool {

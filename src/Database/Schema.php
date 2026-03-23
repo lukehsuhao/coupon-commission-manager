@@ -74,14 +74,41 @@ class Schema {
             KEY idx_created (created_at)
         ) {$charset_collate};";
 
+        $applications_table = self::get_table_name( 'applications' );
+
+        $sql_applications = "CREATE TABLE {$applications_table} (
+            id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+            name VARCHAR(255) NOT NULL,
+            email VARCHAR(255) NOT NULL,
+            phone VARCHAR(50) DEFAULT NULL,
+            company_name VARCHAR(255) DEFAULT NULL,
+            tax_id VARCHAR(20) DEFAULT NULL,
+            bank_name VARCHAR(255) DEFAULT NULL,
+            bank_account VARCHAR(100) DEFAULT NULL,
+            bank_account_name VARCHAR(255) DEFAULT NULL,
+            desired_coupon_code VARCHAR(255) NOT NULL,
+            notes TEXT DEFAULT NULL,
+            status VARCHAR(20) NOT NULL DEFAULT 'pending',
+            admin_note TEXT DEFAULT NULL,
+            created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            reviewed_at DATETIME DEFAULT NULL,
+            reviewed_by BIGINT(20) UNSIGNED DEFAULT NULL,
+            PRIMARY KEY (id),
+            KEY idx_status (status),
+            KEY idx_email (email),
+            KEY idx_created (created_at)
+        ) {$charset_collate};";
+
         require_once ABSPATH . 'wp-admin/includes/upgrade.php';
         dbDelta( $sql_partners );
         dbDelta( $sql_rules );
         dbDelta( $sql_logs );
+        dbDelta( $sql_applications );
     }
 
     public static function drop_tables(): void {
         global $wpdb;
+        $wpdb->query( "DROP TABLE IF EXISTS " . self::get_table_name( 'applications' ) );
         $wpdb->query( "DROP TABLE IF EXISTS " . self::get_table_name( 'commission_logs' ) );
         $wpdb->query( "DROP TABLE IF EXISTS " . self::get_table_name( 'commission_rules' ) );
         $wpdb->query( "DROP TABLE IF EXISTS " . self::get_table_name( 'partners' ) );

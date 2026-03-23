@@ -1,0 +1,222 @@
+/* Coupon Commission Manager - Frontend Application Form */
+
+.ccm-apply-form {
+    max-width: 680px;
+    margin: 0 auto;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+/* Section cards */
+.ccm-form-section {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 28px 32px 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.ccm-form-section h3 {
+    font-size: 17px;
+    font-weight: 700;
+    margin: 0 0 20px;
+    padding: 0;
+    border: none;
+    color: #111827;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.ccm-form-section h3::before {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    font-size: 16px;
+    flex-shrink: 0;
+}
+
+.ccm-section-basic h3::before {
+    content: "👤";
+    background: #eff6ff;
+}
+
+.ccm-section-bank h3::before {
+    content: "🏦";
+    background: #f0fdf4;
+}
+
+.ccm-section-coupon h3::before {
+    content: "🏷️";
+    background: #fefce8;
+}
+
+.ccm-section-notes h3::before {
+    content: "📝";
+    background: #f5f3ff;
+}
+
+/* Two-column grid for short fields */
+.ccm-form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+@media (max-width: 600px) {
+    .ccm-form-grid {
+        grid-template-columns: 1fr;
+    }
+    .ccm-form-section {
+        padding: 20px;
+    }
+}
+
+/* Form rows */
+.ccm-form-row {
+    margin-bottom: 16px;
+}
+
+.ccm-form-row:last-child {
+    margin-bottom: 0;
+}
+
+.ccm-form-row.ccm-full-width {
+    grid-column: 1 / -1;
+}
+
+.ccm-form-row label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 6px;
+    font-size: 13px;
+    color: #374151;
+    letter-spacing: 0.01em;
+}
+
+.ccm-form-row input[type="text"],
+.ccm-form-row input[type="email"],
+.ccm-form-row textarea {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 14px;
+    box-sizing: border-box;
+    background: #f9fafb;
+    color: #111827;
+    transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+}
+
+.ccm-form-row input:hover,
+.ccm-form-row textarea:hover {
+    border-color: #9ca3af;
+}
+
+.ccm-form-row input:focus,
+.ccm-form-row textarea:focus {
+    border-color: #2563eb;
+    background: #fff;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.ccm-form-row textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+.ccm-required {
+    color: #ef4444;
+    font-weight: 400;
+}
+
+.ccm-field-desc {
+    font-size: 12px;
+    color: #6b7280;
+    margin: 6px 0 0;
+    line-height: 1.5;
+}
+
+/* Submit button */
+.ccm-form-submit {
+    text-align: center;
+    padding: 8px 0 4px;
+}
+
+.ccm-form-submit button {
+    background: #2563eb;
+    color: #fff;
+    border: none;
+    padding: 14px 48px;
+    font-size: 16px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    transition: transform 0.1s, box-shadow 0.15s, filter 0.15s;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.ccm-form-submit button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    filter: brightness(1.1);
+}
+
+.ccm-form-submit button:active {
+    transform: translateY(0);
+    filter: brightness(0.95);
+}
+
+/* Success message */
+.ccm-apply-success {
+    max-width: 680px;
+    margin: 0 auto;
+    background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+    border: 1px solid #86efac;
+    border-radius: 12px;
+    padding: 32px;
+    text-align: center;
+}
+
+.ccm-apply-success .ccm-success-icon {
+    font-size: 48px;
+    margin-bottom: 12px;
+}
+
+.ccm-apply-success h3 {
+    margin: 0 0 8px;
+    color: #166534;
+    font-size: 22px;
+}
+
+.ccm-apply-success p {
+    color: #15803d;
+    font-size: 15px;
+    margin: 0;
+}
+
+/* Error message */
+.ccm-apply-error {
+    max-width: 680px;
+    margin: 0 auto 20px;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 10px;
+    padding: 14px 20px;
+    color: #dc2626;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.ccm-apply-error::before {
+    content: "⚠";
+    font-size: 18px;
+    flex-shrink: 0;
+}

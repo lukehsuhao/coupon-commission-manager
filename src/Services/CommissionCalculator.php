@@ -13,6 +13,12 @@ class CommissionCalculator {
             return;
         }
 
+        // Skip WooCommerce Subscriptions renewal orders if setting is enabled
+        $settings = get_option( 'ccm_settings', [] );
+        if ( ! empty( $settings['skip_renewal_orders'] ) && self::is_renewal_order( $order ) ) {
+            return;
+        }
+
         $coupons = $order->get_coupon_codes();
         if ( empty( $coupons ) ) {
             return;
@@ -80,5 +86,28 @@ class CommissionCalculator {
 
     public static function void_order( int $order_id ): void {
         CommissionLog::void_by_order( $order_id );
+    }
+
+    /**
+     * Check if an order is a WooCommerce Subscriptions renewal order.
+     */
+    private static function is_renewal_order( $order ): bool {
+        // Method 1: WooCommerce Subscriptions function (preferred)
+        if ( function_exists( 'wcs_order_contains_renewal' ) ) {
+            return wcs_order_contains_renewal( $order );
+        }
+
+        // Method 2: Check order meta (fallback)
+        $renewal_meta = $order->get_meta( '_subscription_renewal' );
+        if ( ! empty( $renewal_meta ) ) {
+            return true;
+        }
+
+        // Method 3: Check if created via subscription
+        if ( $order->get_created_via() === 'subscription' ) {
+            return true;
+        }
+
+        return false;
     }
 }

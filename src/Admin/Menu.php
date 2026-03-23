@@ -8,6 +8,8 @@ use CouponCommissionManager\Admin\Pages\RulesPage;
 use CouponCommissionManager\Admin\Pages\LogsPage;
 use CouponCommissionManager\Admin\Pages\SettingsPage;
 use CouponCommissionManager\Admin\Pages\CouponsPage;
+use CouponCommissionManager\Admin\Pages\ApplicationsPage;
+use CouponCommissionManager\Models\Application;
 
 class Menu {
 
@@ -42,6 +44,20 @@ class Menu {
             'manage_woocommerce',
             'ccm-partners',
             [ PartnersPage::class, 'render' ]
+        );
+
+        $pending_count = Application::count_by_status( 'pending' );
+        $bubble        = $pending_count > 0
+            ? sprintf( ' <span class="awaiting-mod">%d</span>', $pending_count )
+            : '';
+
+        add_submenu_page(
+            'ccm-dashboard',
+            __( '夥伴申請', 'ccm' ),
+            __( '夥伴申請', 'ccm' ) . $bubble,
+            'manage_woocommerce',
+            'ccm-applications',
+            [ ApplicationsPage::class, 'render' ]
         );
 
         add_submenu_page(
