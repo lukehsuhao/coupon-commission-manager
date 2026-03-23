@@ -148,10 +148,10 @@
 }
 
 .ccm-form-submit button {
-    background: #2563eb;
+    background: #111;
     color: #fff;
     border: none;
-    padding: 14px 48px;
+    padding: 10px 48px;
     font-size: 16px;
     border-radius: 10px;
     cursor: pointer;
