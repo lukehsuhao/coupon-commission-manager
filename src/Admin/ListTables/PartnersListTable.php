@@ -24,10 +24,9 @@ class PartnersListTable extends \WP_List_Table {
         return [
             'cb'                => '<input type="checkbox" />',
             'name'              => __( '姓名', 'ccm' ),
+            'company_info'      => __( '公司/統編', 'ccm' ),
             'email'             => __( 'Email', 'ccm' ),
-            'phone'             => __( '電話', 'ccm' ),
             'bank_info'         => __( '銀行資訊', 'ccm' ),
-            'notes'             => __( '備註', 'ccm' ),
             'status'            => __( '狀態', 'ccm' ),
             'coupons'           => __( '折扣碼數', 'ccm' ),
             'unpaid'            => __( '未結算', 'ccm' ),
@@ -101,12 +100,19 @@ class PartnersListTable extends \WP_List_Table {
         );
     }
 
-    public function column_email( $item ): string {
-        return esc_html( $item->email ?: '—' );
+    public function column_company_info( $item ): string {
+        $parts = [];
+        if ( ! empty( $item->company_name ) ) {
+            $parts[] = esc_html( $item->company_name );
+        }
+        if ( ! empty( $item->tax_id ) ) {
+            $parts[] = '<span style="color:#666;font-size:12px;">' . esc_html( $item->tax_id ) . '</span>';
+        }
+        return $parts ? implode( '<br>', $parts ) : '—';
     }
 
-    public function column_phone( $item ): string {
-        return esc_html( $item->phone ?: '—' );
+    public function column_email( $item ): string {
+        return esc_html( $item->email ?: '—' );
     }
 
     public function column_bank_info( $item ): string {
