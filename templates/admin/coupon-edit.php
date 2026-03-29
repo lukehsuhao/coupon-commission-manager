@@ -151,7 +151,7 @@
                                 </select>
                             </td>
                             <td>
-                                <input type="number" name="rule_standard_amount[]" step="0.01" min="0"
+                                <input type="number" name="rule_standard_amount[]" step="1" min="0"
                                        value="<?php echo esc_attr( $rule->discount_amount ); ?>" style="width:100px;">
                             </td>
                             <td>
@@ -175,7 +175,7 @@
                                 </select>
                             </td>
                             <td>
-                                <input type="number" name="rule_standard_amount[]" step="0.01" min="0" value="" style="width:100px;" placeholder="0">
+                                <input type="number" name="rule_standard_amount[]" step="1" min="0" value="" style="width:100px;" placeholder="0">
                             </td>
                             <td></td>
                         </tr>
@@ -226,7 +226,7 @@
                                 </select>
                             </td>
                             <td>
-                                <input type="number" name="rule_signup_amount[]" step="0.01" min="0"
+                                <input type="number" name="rule_signup_amount[]" step="1" min="0"
                                        value="<?php echo esc_attr( $rule->discount_amount ); ?>" style="width:100px;">
                             </td>
                             <td>
@@ -269,7 +269,7 @@
                                 </select>
                             </td>
                             <td>
-                                <input type="number" name="rule_recurring_amount[]" step="0.01" min="0"
+                                <input type="number" name="rule_recurring_amount[]" step="1" min="0"
                                        value="<?php echo esc_attr( $rule->discount_amount ); ?>" style="width:100px;">
                             </td>
                             <td>
@@ -300,7 +300,7 @@
                         <option value="percent"><?php esc_html_e( '百分比 (%)', 'ccm' ); ?></option>
                     </select>
                 </td>
-                <td><input type="number" name="rule_standard_amount[]" step="0.01" min="0" style="width:100px;"></td>
+                <td><input type="number" name="rule_standard_amount[]" step="1" min="0" style="width:100px;"></td>
                 <td><button type="button" class="button ccm-remove-discount-row"><?php esc_html_e( '移除', 'ccm' ); ?></button></td>
             </tr>
         </template>
@@ -319,7 +319,7 @@
                         <option value="percent"><?php esc_html_e( '百分比 (%)', 'ccm' ); ?></option>
                     </select>
                 </td>
-                <td><input type="number" name="rule_standard_amount[]" step="0.01" min="0" style="width:100px;"></td>
+                <td><input type="number" name="rule_standard_amount[]" step="1" min="0" style="width:100px;"></td>
                 <td><button type="button" class="button ccm-remove-discount-row"><?php esc_html_e( '移除', 'ccm' ); ?></button></td>
             </tr>
         </template>
@@ -337,7 +337,7 @@
                         <option value="sign_up_percent"><?php esc_html_e( '百分比 (%)', 'ccm' ); ?></option>
                     </select>
                 </td>
-                <td><input type="number" name="rule_signup_amount[]" step="0.01" min="0" style="width:100px;"></td>
+                <td><input type="number" name="rule_signup_amount[]" step="1" min="0" style="width:100px;"></td>
                 <td><button type="button" class="button ccm-remove-discount-row"><?php esc_html_e( '移除', 'ccm' ); ?></button></td>
             </tr>
         </template>
@@ -355,7 +355,7 @@
                         <option value="recurring_percent"><?php esc_html_e( '百分比 (%)', 'ccm' ); ?></option>
                     </select>
                 </td>
-                <td><input type="number" name="rule_recurring_amount[]" step="0.01" min="0" style="width:100px;"></td>
+                <td><input type="number" name="rule_recurring_amount[]" step="1" min="0" style="width:100px;"></td>
                 <td><button type="button" class="button ccm-remove-discount-row"><?php esc_html_e( '移除', 'ccm' ); ?></button></td>
             </tr>
         </template>
