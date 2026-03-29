@@ -124,8 +124,12 @@
                     html += '<input type="email" class="ccm-email-to" value="' + escAttr(data.partner_email) + '" readonly style="background:#f5f5f5;">';
                     html += '<label>主旨</label>';
                     html += '<input type="text" class="ccm-email-subject" value="' + escAttr(data.subject) + '">';
-                    html += '<label>內容</label>';
-                    html += '<textarea class="ccm-email-body">' + escHtml(data.body) + '</textarea>';
+                    html += '<label>信件預覽</label>';
+                    html += '<div class="ccm-email-preview" style="border:1px solid #ddd;border-radius:4px;padding:16px;background:#fff;font-size:14px;line-height:1.6;max-height:300px;overflow-y:auto;">';
+                    html += data.body_html;
+                    html += '</div>';
+                    // Store template for sending
+                    html += '<input type="hidden" class="ccm-email-body-template" value="' + escAttr(data.body_template) + '">';
                     html += '</div>';
                 });
 
@@ -156,7 +160,7 @@
             var pid = $(this).data('partner-id');
             overrides[pid] = {
                 subject: $(this).find('.ccm-email-subject').val(),
-                body: $(this).find('.ccm-email-body').val(),
+                body_text: $(this).find('.ccm-email-body-template').val(),
             };
         });
 

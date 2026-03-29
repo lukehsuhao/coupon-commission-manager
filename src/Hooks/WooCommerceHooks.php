@@ -277,8 +277,8 @@ class WooCommerceHooks {
         if ( ! empty( $_POST['overrides'] ) && is_array( $_POST['overrides'] ) ) {
             foreach ( $_POST['overrides'] as $pid => $override ) {
                 $overrides[ (int) $pid ] = [
-                    'subject' => sanitize_text_field( $override['subject'] ?? '' ),
-                    'body'    => sanitize_textarea_field( $override['body'] ?? '' ),
+                    'subject'   => sanitize_text_field( $override['subject'] ?? '' ),
+                    'body_text' => wp_unslash( $override['body_text'] ?? '' ),
                 ];
             }
         }
