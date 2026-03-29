@@ -16,6 +16,7 @@ class WooCommerceHooks {
 
         // AJAX search
         add_action( 'wp_ajax_ccm_search_products', [ self::class, 'ajax_search_products' ] );
+        add_action( 'wp_ajax_ccm_search_categories', [ self::class, 'ajax_search_categories' ] );
         add_action( 'wp_ajax_ccm_search_coupons', [ self::class, 'ajax_search_coupons' ] );
         add_action( 'wp_ajax_ccm_create_coupon', [ self::class, 'ajax_create_coupon' ] );
 
@@ -162,6 +163,37 @@ class WooCommerceHooks {
         }
 
         return $product->get_name() . $type_label;
+    }
+
+    public static function ajax_search_categories(): void {
+        check_ajax_referer( 'ccm_admin_action', 'nonce' );
+        if ( ! current_user_can( 'manage_woocommerce' ) ) {
+            wp_send_json_error();
+        }
+
+        $term = isset( $_GET['term'] ) ? sanitize_text_field( wp_unslash( $_GET['term'] ) ) : '';
+
+        $args = [
+            'taxonomy'   => 'product_cat',
+            'hide_empty' => false,
+            'number'     => 20,
+            'orderby'    => 'name',
+        ];
+        if ( ! empty( $term ) ) {
+            $args['search'] = $term;
+        }
+
+        $categories = get_terms( $args );
+        $data = [];
+        foreach ( $categories as $cat ) {
+            $data[] = [
+                'id'    => (int) $cat->term_id,
+                'label' => $cat->name . ' (' . $cat->count . ')',
+                'value' => $cat->name,
+            ];
+        }
+
+        wp_send_json( $data );
     }
 
     public static function ajax_search_coupons(): void {

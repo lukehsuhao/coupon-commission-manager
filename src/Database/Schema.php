@@ -99,15 +99,32 @@ class Schema {
             KEY idx_created (created_at)
         ) {$charset_collate};";
 
+        $coupon_rules_table = self::get_table_name( 'coupon_rules' );
+
+        $sql_coupon_rules = "CREATE TABLE {$coupon_rules_table} (
+            id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+            coupon_id BIGINT(20) UNSIGNED NOT NULL,
+            target_type VARCHAR(20) NOT NULL DEFAULT 'all',
+            target_id BIGINT(20) UNSIGNED NOT NULL DEFAULT 0,
+            discount_type VARCHAR(30) NOT NULL DEFAULT 'fixed',
+            discount_amount DECIMAL(10,2) NOT NULL DEFAULT 0,
+            created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            PRIMARY KEY (id),
+            UNIQUE KEY idx_coupon_target (coupon_id, target_type, target_id, discount_type),
+            KEY idx_coupon (coupon_id)
+        ) {$charset_collate};";
+
         require_once ABSPATH . 'wp-admin/includes/upgrade.php';
         dbDelta( $sql_partners );
         dbDelta( $sql_rules );
         dbDelta( $sql_logs );
         dbDelta( $sql_applications );
+        dbDelta( $sql_coupon_rules );
     }
 
     public static function drop_tables(): void {
         global $wpdb;
+        $wpdb->query( "DROP TABLE IF EXISTS " . self::get_table_name( 'coupon_rules' ) );
         $wpdb->query( "DROP TABLE IF EXISTS " . self::get_table_name( 'applications' ) );
         $wpdb->query( "DROP TABLE IF EXISTS " . self::get_table_name( 'commission_logs' ) );
         $wpdb->query( "DROP TABLE IF EXISTS " . self::get_table_name( 'commission_rules' ) );

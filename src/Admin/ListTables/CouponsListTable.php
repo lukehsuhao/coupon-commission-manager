@@ -3,6 +3,7 @@
 namespace CouponCommissionManager\Admin\ListTables;
 
 use CouponCommissionManager\Models\CommissionRule;
+use CouponCommissionManager\Models\CouponRule;
 
 if ( ! class_exists( 'WP_List_Table' ) ) {
     require_once ABSPATH . 'wp-admin/includes/class-wp-list-table.php';
@@ -21,11 +22,11 @@ class CouponsListTable extends \WP_List_Table {
     public function get_columns(): array {
         return [
             'code'          => __( '折扣碼', 'ccm' ),
-            'discount_type' => __( '折扣類型', 'ccm' ),
-            'amount'        => __( '折扣金額', 'ccm' ),
+            'discount_info' => __( '折扣設定', 'ccm' ),
             'description'   => __( '說明', 'ccm' ),
             'has_rules'     => __( '分潤規則', 'ccm' ),
-            'usage_count'   => __( '已使用次數', 'ccm' ),
+            'usage_count'   => __( '使用次數', 'ccm' ),
+            'expires'       => __( '到期日', 'ccm' ),
             'actions'       => __( '操作', 'ccm' ),
         ];
     }
@@ -65,27 +66,25 @@ class CouponsListTable extends \WP_List_Table {
     }
 
     public function column_code( $item ): string {
-        $edit_url = admin_url( 'post.php?post=' . $item->ID . '&action=edit' );
-        return '<strong><a href="' . esc_url( $edit_url ) . '"><code>' . esc_html( $item->post_title ) . '</code></a></strong>';
+        $edit_url = admin_url( 'admin.php?page=ccm-coupon-edit&coupon_id=' . $item->ID );
+        return '<strong><a href="' . esc_url( $edit_url ) . '"><code style="font-size:14px;">' . esc_html( strtoupper( $item->post_title ) ) . '</code></a></strong>';
     }
 
-    public function column_discount_type( $item ): string {
-        $type   = get_post_meta( $item->ID, 'discount_type', true );
-        $labels = [
-            'fixed_cart'    => __( '購物車固定折扣', 'ccm' ),
-            'percent'       => __( '百分比折扣', 'ccm' ),
-            'fixed_product' => __( '商品固定折扣', 'ccm' ),
-        ];
-        return esc_html( $labels[ $type ] ?? $type );
-    }
-
-    public function column_amount( $item ): string {
-        $amount = get_post_meta( $item->ID, 'coupon_amount', true );
-        $type   = get_post_meta( $item->ID, 'discount_type', true );
-        if ( 'percent' === $type ) {
-            return esc_html( $amount ) . '%';
+    public function column_discount_info( $item ): string {
+        $summary = CouponRule::get_summary( $item->ID );
+        if ( $summary ) {
+            return esc_html( $summary );
         }
-        return 'NT$' . esc_html( number_format( (float) $amount, 0 ) );
+
+        // Fallback to WC coupon data
+        $type   = get_post_meta( $item->ID, 'discount_type', true );
+        $amount = get_post_meta( $item->ID, 'coupon_amount', true );
+        $labels = [
+            'fixed_cart'    => 'NT$ ' . number_format( (float) $amount ),
+            'percent'       => $amount . '%',
+            'fixed_product' => 'NT$ ' . number_format( (float) $amount ) . '/商品',
+        ];
+        return esc_html( $labels[ $type ] ?? '—' );
     }
 
     public function column_description( $item ): string {
@@ -97,10 +96,9 @@ class CouponsListTable extends \WP_List_Table {
         $rules = CommissionRule::find_by_coupon( $item->ID );
         if ( empty( $rules ) ) {
             $new_url = admin_url( 'admin.php?page=ccm-rules&action=new' );
-            return '<a href="' . esc_url( $new_url ) . '" style="color:#999;">' . esc_html__( '未設定 — 前往新增', 'ccm' ) . '</a>';
+            return '<a href="' . esc_url( $new_url ) . '" style="color:#999;">' . esc_html__( '未設定', 'ccm' ) . '</a>';
         }
 
-        // Group by partner_id — link directly to edit page for each partner
         $by_partner = [];
         foreach ( $rules as $r ) {
             $by_partner[ (int) $r->partner_id ] = true;
@@ -114,16 +112,32 @@ class CouponsListTable extends \WP_List_Table {
             $links[] = '<a href="' . esc_url( $url ) . '">' . esc_html( $name ) . '</a>';
         }
 
-        return implode( '、', $links ) . ' (' . count( $rules ) . ')';
+        return implode( '、', $links );
     }
 
     public function column_usage_count( $item ): string {
         $count = get_post_meta( $item->ID, 'usage_count', true );
-        return esc_html( $count ?: '0' );
+        $limit = get_post_meta( $item->ID, 'usage_limit', true );
+        $text  = $count ?: '0';
+        if ( $limit ) {
+            $text .= ' / ' . $limit;
+        }
+        return esc_html( $text );
+    }
+
+    public function column_expires( $item ): string {
+        $coupon = new \WC_Coupon( $item->ID );
+        $date   = $coupon->get_date_expires();
+        if ( ! $date ) {
+            return '<span style="color:#999;">—</span>';
+        }
+        $is_expired = $date->getTimestamp() < time();
+        $color      = $is_expired ? 'color:#d63638;' : '';
+        return '<span style="' . $color . '">' . esc_html( $date->date( 'Y-m-d' ) ) . '</span>';
     }
 
     public function column_actions( $item ): string {
-        $edit_url = admin_url( 'post.php?post=' . $item->ID . '&action=edit' );
+        $edit_url = admin_url( 'admin.php?page=ccm-coupon-edit&coupon_id=' . $item->ID );
         $rule_url = admin_url( 'admin.php?page=ccm-rules&action=new' );
 
         return '<a href="' . esc_url( $edit_url ) . '" class="button button-small">' . esc_html__( '編輯', 'ccm' ) . '</a> '

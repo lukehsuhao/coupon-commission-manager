@@ -6,6 +6,7 @@ use CouponCommissionManager\Admin\Menu;
 use CouponCommissionManager\Admin\Assets;
 use CouponCommissionManager\Hooks\WooCommerceHooks;
 use CouponCommissionManager\Services\CsvExporter;
+use CouponCommissionManager\Services\CouponDiscountService;
 use CouponCommissionManager\Frontend\ApplicationForm;
 use CouponCommissionManager\Database\Schema;
 
@@ -51,6 +52,9 @@ class Plugin {
 
         // WooCommerce hooks
         WooCommerceHooks::register();
+
+        // Custom coupon discount engine
+        CouponDiscountService::register();
 
         // CSV Export endpoint
         CsvExporter::register();

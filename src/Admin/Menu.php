@@ -8,6 +8,7 @@ use CouponCommissionManager\Admin\Pages\RulesPage;
 use CouponCommissionManager\Admin\Pages\LogsPage;
 use CouponCommissionManager\Admin\Pages\SettingsPage;
 use CouponCommissionManager\Admin\Pages\CouponsPage;
+use CouponCommissionManager\Admin\Pages\CouponEditPage;
 use CouponCommissionManager\Admin\Pages\ApplicationsPage;
 use CouponCommissionManager\Models\Application;
 
@@ -67,6 +68,16 @@ class Menu {
             'manage_woocommerce',
             'ccm-coupons',
             [ CouponsPage::class, 'render' ]
+        );
+
+        // Hidden page for coupon edit
+        add_submenu_page(
+            null, // Hidden from menu
+            __( '編輯折扣碼', 'ccm' ),
+            __( '編輯折扣碼', 'ccm' ),
+            'manage_woocommerce',
+            'ccm-coupon-edit',
+            [ CouponEditPage::class, 'render' ]
         );
 
         add_submenu_page(

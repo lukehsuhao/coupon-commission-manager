@@ -251,8 +251,46 @@
             $newRow.find('.ccm-autocomplete').first().focus();
         });
 
-        // Remove product row
+        // Remove product row (commission rules)
         $(document).on('click', '.ccm-remove-row', function () {
+            $(this).closest('tr').remove();
+        });
+
+        // ===== Coupon Edit: Discount rows =====
+
+        // Add product/variation discount row
+        $('#ccm-add-product-discount').on('click', function () {
+            var tpl = document.getElementById('ccm-product-discount-template');
+            if (!tpl) return;
+            var clone = tpl.content.cloneNode(true);
+            $('#ccm-standard-rules-body').append(clone);
+            var $newRow = $('#ccm-standard-rules-body tr:last');
+            $newRow.find('.ccm-autocomplete').each(function () { initAutocomplete($(this)); });
+            $newRow.find('.ccm-autocomplete').first().focus();
+        });
+
+        // Add category discount row
+        $('#ccm-add-category-discount').on('click', function () {
+            var tpl = document.getElementById('ccm-category-discount-template');
+            if (!tpl) return;
+            var clone = tpl.content.cloneNode(true);
+            $('#ccm-standard-rules-body').append(clone);
+            var $newRow = $('#ccm-standard-rules-body tr:last');
+            $newRow.find('.ccm-autocomplete').each(function () { initAutocomplete($(this)); });
+            $newRow.find('.ccm-autocomplete').first().focus();
+        });
+
+        // Add subscription rule rows
+        $(document).on('click', '.ccm-add-sub-rule', function () {
+            var section = $(this).data('section');
+            var tpl = document.getElementById('ccm-sub-rule-template-' + section);
+            if (!tpl) return;
+            var clone = tpl.content.cloneNode(true);
+            $('#ccm-' + section + '-rules-body').append(clone);
+        });
+
+        // Remove discount row
+        $(document).on('click', '.ccm-remove-discount-row', function () {
             $(this).closest('tr').remove();
         });
 
