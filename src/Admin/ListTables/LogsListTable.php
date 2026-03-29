@@ -24,6 +24,7 @@ class LogsListTable extends \WP_List_Table {
             'cb'               => '<input type="checkbox" />',
             'created_at'       => __( '日期', 'ccm' ),
             'order_id'         => __( '訂單', 'ccm' ),
+            'buyer_name'       => __( '購買人', 'ccm' ),
             'partner'          => __( '夥伴', 'ccm' ),
             'coupon_code'      => __( '折扣碼', 'ccm' ),
             'product_name'     => __( '商品', 'ccm' ),
@@ -147,6 +148,24 @@ class LogsListTable extends \WP_List_Table {
             $url = admin_url( 'post.php?post=' . $item->order_id . '&action=edit' );
         }
         return '<a href="' . esc_url( $url ) . '">#' . esc_html( $item->order_id ) . '</a>';
+    }
+
+    public function column_buyer_name( $item ): string {
+        static $order_cache = [];
+        $oid = (int) $item->order_id;
+        if ( ! isset( $order_cache[ $oid ] ) ) {
+            $order = wc_get_order( $oid );
+            if ( $order ) {
+                $first = $order->get_billing_last_name() . $order->get_billing_first_name();
+                if ( empty( trim( $first ) ) ) {
+                    $first = $order->get_billing_first_name() ?: $order->get_formatted_billing_full_name();
+                }
+                $order_cache[ $oid ] = trim( $first );
+            } else {
+                $order_cache[ $oid ] = '—';
+            }
+        }
+        return esc_html( $order_cache[ $oid ] );
     }
 
     public function column_partner( $item ): string {

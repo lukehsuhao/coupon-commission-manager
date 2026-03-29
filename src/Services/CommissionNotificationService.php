@@ -47,33 +47,99 @@ class CommissionNotificationService {
      * Build HTML commission details table from logs.
      */
     public static function build_details_html( array $logs ): string {
-        $html  = '<table style="border-collapse:collapse;width:100%;max-width:600px;font-size:14px;">';
+        $th = 'padding:10px 12px;border:1px solid #e2e8f0;font-weight:600;';
+        $td = 'padding:10px 12px;border:1px solid #e2e8f0;';
+
+        $html  = '<table style="border-collapse:collapse;width:100%;max-width:700px;font-size:14px;">';
         $html .= '<thead><tr style="background:#f8f9fa;">';
-        $html .= '<th style="padding:10px 12px;border:1px solid #e2e8f0;text-align:left;font-weight:600;">商品</th>';
-        $html .= '<th style="padding:10px 12px;border:1px solid #e2e8f0;text-align:center;font-weight:600;width:60px;">數量</th>';
-        $html .= '<th style="padding:10px 12px;border:1px solid #e2e8f0;text-align:right;font-weight:600;width:110px;">單筆分潤</th>';
-        $html .= '<th style="padding:10px 12px;border:1px solid #e2e8f0;text-align:right;font-weight:600;width:110px;">小計</th>';
+        $html .= '<th style="' . $th . 'text-align:left;">日期</th>';
+        $html .= '<th style="' . $th . 'text-align:left;">購買人</th>';
+        $html .= '<th style="' . $th . 'text-align:left;">商品</th>';
+        $html .= '<th style="' . $th . 'text-align:center;width:50px;">數量</th>';
+        $html .= '<th style="' . $th . 'text-align:right;width:100px;">單筆分潤</th>';
+        $html .= '<th style="' . $th . 'text-align:right;width:100px;">小計</th>';
         $html .= '</tr></thead><tbody>';
 
         $total = 0;
         foreach ( $logs as $log ) {
+            $order_date = substr( $log->created_at, 0, 10 );
+            $buyer_name = self::get_anonymized_buyer_name( (int) $log->order_id );
+
             $html .= '<tr>';
-            $html .= '<td style="padding:10px 12px;border:1px solid #e2e8f0;">' . esc_html( $log->product_name ) . '</td>';
-            $html .= '<td style="padding:10px 12px;border:1px solid #e2e8f0;text-align:center;">' . esc_html( $log->quantity ) . '</td>';
-            $html .= '<td style="padding:10px 12px;border:1px solid #e2e8f0;text-align:right;">NT$ ' . number_format( (float) $log->commission_per_unit ) . '</td>';
-            $html .= '<td style="padding:10px 12px;border:1px solid #e2e8f0;text-align:right;">NT$ ' . number_format( (float) $log->commission_total ) . '</td>';
+            $html .= '<td style="' . $td . '">' . esc_html( $order_date ) . '</td>';
+            $html .= '<td style="' . $td . '">' . esc_html( $buyer_name ) . '</td>';
+            $html .= '<td style="' . $td . '">' . esc_html( $log->product_name ) . '</td>';
+            $html .= '<td style="' . $td . 'text-align:center;">' . esc_html( $log->quantity ) . '</td>';
+            $html .= '<td style="' . $td . 'text-align:right;">NT$ ' . number_format( (float) $log->commission_per_unit ) . '</td>';
+            $html .= '<td style="' . $td . 'text-align:right;">NT$ ' . number_format( (float) $log->commission_total ) . '</td>';
             $html .= '</tr>';
             $total += (float) $log->commission_total;
         }
 
         $html .= '</tbody>';
         $html .= '<tfoot><tr style="background:#f8f9fa;font-weight:600;">';
-        $html .= '<td colspan="3" style="padding:10px 12px;border:1px solid #e2e8f0;text-align:right;">分潤總金額</td>';
-        $html .= '<td style="padding:10px 12px;border:1px solid #e2e8f0;text-align:right;">NT$ ' . number_format( $total ) . '</td>';
+        $html .= '<td colspan="5" style="' . $td . 'text-align:right;">分潤總金額</td>';
+        $html .= '<td style="' . $td . 'text-align:right;">NT$ ' . number_format( $total ) . '</td>';
         $html .= '</tr></tfoot>';
         $html .= '</table>';
 
         return $html;
+    }
+
+    /**
+     * Get buyer name from order, with anonymization.
+     * 陳小明 → 陳○明, 小明 → 小○, John Smith → J○○○ Smith
+     */
+    public static function get_anonymized_buyer_name( int $order_id ): string {
+        static $cache = [];
+        if ( isset( $cache[ $order_id ] ) ) {
+            return $cache[ $order_id ];
+        }
+
+        $order = wc_get_order( $order_id );
+        if ( ! $order ) {
+            $cache[ $order_id ] = '—';
+            return '—';
+        }
+
+        $last  = $order->get_billing_last_name();
+        $first = $order->get_billing_first_name();
+        $full  = trim( $last . $first );
+
+        if ( empty( $full ) ) {
+            $full = trim( $first ?: $order->get_formatted_billing_full_name() );
+        }
+
+        $cache[ $order_id ] = self::anonymize_name( $full );
+        return $cache[ $order_id ];
+    }
+
+    /**
+     * Anonymize a name by replacing middle characters with ○.
+     * 3+ chars CJK: 陳小明 → 陳○明
+     * 2 chars CJK: 小明 → 小○
+     * 1 char: keep as-is
+     * Latin names: John → J○○n
+     */
+    public static function anonymize_name( string $name ): string {
+        $name = trim( $name );
+        if ( empty( $name ) ) return '—';
+
+        $len = mb_strlen( $name );
+
+        if ( $len <= 1 ) {
+            return $name;
+        }
+
+        if ( $len === 2 ) {
+            return mb_substr( $name, 0, 1 ) . '○';
+        }
+
+        // 3+ characters: keep first and last, replace middle with ○
+        $first = mb_substr( $name, 0, 1 );
+        $last  = mb_substr( $name, -1, 1 );
+        $middle_len = $len - 2;
+        return $first . str_repeat( '○', $middle_len ) . $last;
     }
 
     /**
