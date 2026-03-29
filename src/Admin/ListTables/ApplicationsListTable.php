@@ -22,8 +22,11 @@ class ApplicationsListTable extends \WP_List_Table {
         return [
             'name'                => __( '姓名', 'ccm' ),
             'email'               => __( 'Email', 'ccm' ),
-            'company_name'        => __( '公司名稱', 'ccm' ),
+            'phone'               => __( '電話', 'ccm' ),
+            'company_info'        => __( '公司/統編', 'ccm' ),
+            'bank_info'           => __( '銀行資訊', 'ccm' ),
             'desired_coupon_code' => __( '申請折扣碼', 'ccm' ),
+            'notes'               => __( '備註', 'ccm' ),
             'status'              => __( '狀態', 'ccm' ),
             'created_at'          => __( '申請時間', 'ccm' ),
             'actions'             => __( '操作', 'ccm' ),
@@ -111,8 +114,38 @@ class ApplicationsListTable extends \WP_List_Table {
         return esc_html( $item->email );
     }
 
-    public function column_company_name( $item ): string {
-        return esc_html( $item->company_name ?: '—' );
+    public function column_phone( $item ): string {
+        return esc_html( $item->phone ?: '—' );
+    }
+
+    public function column_company_info( $item ): string {
+        $parts = [];
+        if ( ! empty( $item->company_name ) ) {
+            $parts[] = esc_html( $item->company_name );
+        }
+        if ( ! empty( $item->tax_id ) ) {
+            $parts[] = '<span style="color:#666;font-size:12px;">' . esc_html( $item->tax_id ) . '</span>';
+        }
+        return $parts ? implode( '<br>', $parts ) : '—';
+    }
+
+    public function column_bank_info( $item ): string {
+        if ( empty( $item->bank_account ) ) {
+            return '—';
+        }
+        $parts = [];
+        if ( $item->bank_name ) {
+            $parts[] = esc_html( $item->bank_name );
+        }
+        $parts[] = '<span style="font-size:12px;">' . esc_html( $item->bank_account ) . '</span>';
+        if ( $item->bank_account_name ) {
+            $parts[] = '<span style="color:#666;font-size:12px;">(' . esc_html( $item->bank_account_name ) . ')</span>';
+        }
+        return implode( '<br>', $parts );
+    }
+
+    public function column_notes( $item ): string {
+        return ! empty( $item->notes ) ? esc_html( mb_strimwidth( $item->notes, 0, 30, '...' ) ) : '—';
     }
 
     public function column_desired_coupon_code( $item ): string {
