@@ -279,6 +279,7 @@ class WooCommerceHooks {
                 $overrides[ (int) $pid ] = [
                     'subject'   => sanitize_text_field( $override['subject'] ?? '' ),
                     'body_text' => wp_unslash( $override['body_text'] ?? '' ),
+                    'email'     => sanitize_email( $override['email'] ?? '' ),
                 ];
             }
         }

@@ -178,6 +178,7 @@ class CommissionNotificationService {
             }
 
             $details_html = self::build_details_html( $data['logs'] );
+            $send_to = ! empty( $overrides[ $pid ]['email'] ) ? $overrides[ $pid ]['email'] : $partner->email;
 
             if ( isset( $overrides[ $pid ] ) ) {
                 $subject   = $overrides[ $pid ]['subject'];
@@ -212,7 +213,7 @@ class CommissionNotificationService {
             $email_html .= '</div>';
 
             $headers = [ 'Content-Type: text/html; charset=UTF-8' ];
-            $sent = wp_mail( $partner->email, $subject, $email_html, $headers );
+            $sent = wp_mail( $send_to, $subject, $email_html, $headers );
 
             $results[ $pid ] = [
                 'sent'         => $sent,

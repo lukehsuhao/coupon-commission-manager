@@ -121,7 +121,7 @@
                     html += ' <span class="ccm-badge">' + data.log_count + ' 筆分潤，共 NT$ ' + numberFormat(data.total) + '</span>';
                     html += '</h3>';
                     html += '<label>收件人</label>';
-                    html += '<input type="email" class="ccm-email-to" value="' + escAttr(data.partner_email) + '" readonly style="background:#f5f5f5;">';
+                    html += '<input type="email" class="ccm-email-to" value="' + escAttr(data.partner_email) + '">';
                     html += '<label>主旨</label>';
                     html += '<input type="text" class="ccm-email-subject" value="' + escAttr(data.subject) + '">';
                     html += '<label>信件預覽</label>';
@@ -161,6 +161,7 @@
             overrides[pid] = {
                 subject: $(this).find('.ccm-email-subject').val(),
                 body_text: $(this).find('.ccm-email-body-template').val(),
+                email: $(this).find('.ccm-email-to').val(),
             };
         });
 
