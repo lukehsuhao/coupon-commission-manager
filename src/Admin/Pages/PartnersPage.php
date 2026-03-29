@@ -35,6 +35,8 @@ class PartnersPage {
                 'name'              => sanitize_text_field( $_POST['name'] ?? '' ),
                 'email'             => sanitize_email( $_POST['email'] ?? '' ),
                 'phone'             => sanitize_text_field( $_POST['phone'] ?? '' ),
+                'company_name'      => sanitize_text_field( $_POST['company_name'] ?? '' ),
+                'tax_id'            => sanitize_text_field( $_POST['tax_id'] ?? '' ),
                 'bank_name'         => sanitize_text_field( $_POST['bank_name'] ?? '' ),
                 'bank_account'      => sanitize_text_field( $_POST['bank_account'] ?? '' ),
                 'bank_account_name' => sanitize_text_field( $_POST['bank_account_name'] ?? '' ),

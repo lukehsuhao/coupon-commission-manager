@@ -26,6 +26,14 @@
                 <td><input type="text" id="phone" name="phone" class="regular-text" value="<?php echo esc_attr( $partner->phone ?? '' ); ?>"></td>
             </tr>
             <tr>
+                <th scope="row"><label for="company_name"><?php esc_html_e( '公司名稱', 'ccm' ); ?></label></th>
+                <td><input type="text" id="company_name" name="company_name" class="regular-text" value="<?php echo esc_attr( $partner->company_name ?? '' ); ?>"></td>
+            </tr>
+            <tr>
+                <th scope="row"><label for="tax_id"><?php esc_html_e( '統一編號', 'ccm' ); ?></label></th>
+                <td><input type="text" id="tax_id" name="tax_id" class="regular-text" value="<?php echo esc_attr( $partner->tax_id ?? '' ); ?>" maxlength="20"></td>
+            </tr>
+            <tr>
                 <th scope="row"><label for="bank_name"><?php esc_html_e( '銀行名稱', 'ccm' ); ?></label></th>
                 <td><input type="text" id="bank_name" name="bank_name" class="regular-text" value="<?php echo esc_attr( $partner->bank_name ?? '' ); ?>"></td>
             </tr>
