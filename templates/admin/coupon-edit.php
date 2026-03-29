@@ -195,6 +195,62 @@
             <h2><?php esc_html_e( '訂閱折扣設定', 'ccm' ); ?></h2>
             <p class="description"><?php esc_html_e( '針對 WooCommerce Subscriptions 訂閱商品，可分別設定開通費和續訂費的折扣。', 'ccm' ); ?></p>
 
+            <?php
+            // Helper to render subscription rule rows
+            function ccm_render_sub_rules( $rules, $section, $fee_type, $pct_type ) {
+            foreach ( $rules as $rule ) :
+                $display_name = '';
+                if ( $rule->target_type !== 'all' ) {
+                    if ( $rule->target_type === 'category' ) {
+                        $term = get_term( $rule->target_id, 'product_cat' );
+                        $display_name = $term ? $term->name : '#' . $rule->target_id;
+                    } else {
+                        $product = wc_get_product( $rule->target_id );
+                        if ( $product ) {
+                            if ( $product->is_type('variation') || $product->is_type('subscription_variation') ) {
+                                $parent = wc_get_product( $product->get_parent_id() );
+                                $attrs = implode(', ', array_filter($product->get_variation_attributes()));
+                                $display_name = ($parent ? $parent->get_name() : '') . ($attrs ? ' — ' . $attrs : '');
+                            } else {
+                                $display_name = $product->get_name();
+                            }
+                        }
+                    }
+                }
+            ?>
+                <tr class="ccm-discount-row">
+                    <td>
+                        <?php if ( $rule->target_type === 'all' ) : ?>
+                            <em><?php esc_html_e( '所有訂閱商品（預設）', 'ccm' ); ?></em>
+                            <input type="hidden" name="rule_<?php echo $section; ?>_target_type[]" value="all">
+                            <input type="hidden" name="rule_<?php echo $section; ?>_target_id[]" value="0">
+                        <?php else : ?>
+                            <select name="rule_<?php echo $section; ?>_target_type[]" class="ccm-target-type-select" style="width:100px;">
+                                <option value="product" <?php selected( $rule->target_type, 'product' ); ?>><?php esc_html_e( '商品', 'ccm' ); ?></option>
+                                <option value="variation" <?php selected( $rule->target_type, 'variation' ); ?>><?php esc_html_e( '變化', 'ccm' ); ?></option>
+                                <option value="category" <?php selected( $rule->target_type, 'category' ); ?>><?php esc_html_e( '分類', 'ccm' ); ?></option>
+                            </select>
+                            <input type="text" class="ccm-autocomplete" data-type="<?php echo $rule->target_type === 'category' ? 'categories' : 'products'; ?>"
+                                   value="<?php echo esc_attr( $display_name ); ?>" style="width:calc(100% - 110px);">
+                            <input type="hidden" name="rule_<?php echo $section; ?>_target_id[]" value="<?php echo esc_attr( $rule->target_id ); ?>">
+                        <?php endif; ?>
+                    </td>
+                    <td>
+                        <select name="rule_<?php echo $section; ?>_discount_type[]">
+                            <option value="<?php echo $fee_type; ?>" <?php selected( $rule->discount_type, $fee_type ); ?>><?php esc_html_e( '固定金額 (NT$)', 'ccm' ); ?></option>
+                            <option value="<?php echo $pct_type; ?>" <?php selected( $rule->discount_type, $pct_type ); ?>><?php esc_html_e( '百分比 (%)', 'ccm' ); ?></option>
+                        </select>
+                    </td>
+                    <td>
+                        <input type="number" name="rule_<?php echo $section; ?>_amount[]" step="1" min="0"
+                               value="<?php echo esc_attr( $rule->discount_amount ); ?>" style="width:100px;">
+                    </td>
+                    <td>
+                        <button type="button" class="button ccm-remove-discount-row"><?php esc_html_e( '移除', 'ccm' ); ?></button>
+                    </td>
+                </tr>
+            <?php endforeach; } ?>
+
             <h3><?php esc_html_e( '開通費折扣（Sign-up Fee）', 'ccm' ); ?></h3>
             <table class="widefat ccm-discount-table" id="ccm-signup-rules">
                 <thead>
@@ -206,37 +262,13 @@
                     </tr>
                 </thead>
                 <tbody id="ccm-signup-rules-body">
-                    <?php foreach ( $coupon_rules['signup'] as $rule ) : ?>
-                        <tr class="ccm-discount-row">
-                            <td>
-                                <?php if ( $rule->target_type === 'all' ) : ?>
-                                    <em><?php esc_html_e( '所有訂閱商品（預設）', 'ccm' ); ?></em>
-                                    <input type="hidden" name="rule_signup_target_type[]" value="all">
-                                    <input type="hidden" name="rule_signup_target_id[]" value="0">
-                                <?php else : ?>
-                                    <input type="hidden" name="rule_signup_target_type[]" value="<?php echo esc_attr( $rule->target_type ); ?>">
-                                    <input type="hidden" name="rule_signup_target_id[]" value="<?php echo esc_attr( $rule->target_id ); ?>">
-                                    <span><?php echo esc_html( $rule->target_type . ' #' . $rule->target_id ); ?></span>
-                                <?php endif; ?>
-                            </td>
-                            <td>
-                                <select name="rule_signup_discount_type[]">
-                                    <option value="sign_up_fee" <?php selected( $rule->discount_type, 'sign_up_fee' ); ?>><?php esc_html_e( '固定金額 (NT$)', 'ccm' ); ?></option>
-                                    <option value="sign_up_percent" <?php selected( $rule->discount_type, 'sign_up_percent' ); ?>><?php esc_html_e( '百分比 (%)', 'ccm' ); ?></option>
-                                </select>
-                            </td>
-                            <td>
-                                <input type="number" name="rule_signup_amount[]" step="1" min="0"
-                                       value="<?php echo esc_attr( $rule->discount_amount ); ?>" style="width:100px;">
-                            </td>
-                            <td>
-                                <button type="button" class="button ccm-remove-discount-row"><?php esc_html_e( '移除', 'ccm' ); ?></button>
-                            </td>
-                        </tr>
-                    <?php endforeach; ?>
+                    <?php ccm_render_sub_rules( $coupon_rules['signup'], 'signup', 'sign_up_fee', 'sign_up_percent' ); ?>
                 </tbody>
             </table>
-            <p><button type="button" class="button ccm-add-sub-rule" data-section="signup">+ <?php esc_html_e( '新增開通費折扣', 'ccm' ); ?></button></p>
+            <p>
+                <button type="button" class="button ccm-add-sub-rule" data-section="signup">+ <?php esc_html_e( '新增預設開通費折扣', 'ccm' ); ?></button>
+                <button type="button" class="button ccm-add-sub-product-rule" data-section="signup">+ <?php esc_html_e( '新增指定商品開通費折扣', 'ccm' ); ?></button>
+            </p>
 
             <h3><?php esc_html_e( '續訂費折扣（Recurring Fee）', 'ccm' ); ?></h3>
             <table class="widefat ccm-discount-table" id="ccm-recurring-rules">
@@ -249,37 +281,13 @@
                     </tr>
                 </thead>
                 <tbody id="ccm-recurring-rules-body">
-                    <?php foreach ( $coupon_rules['recurring'] as $rule ) : ?>
-                        <tr class="ccm-discount-row">
-                            <td>
-                                <?php if ( $rule->target_type === 'all' ) : ?>
-                                    <em><?php esc_html_e( '所有訂閱商品（預設）', 'ccm' ); ?></em>
-                                    <input type="hidden" name="rule_recurring_target_type[]" value="all">
-                                    <input type="hidden" name="rule_recurring_target_id[]" value="0">
-                                <?php else : ?>
-                                    <input type="hidden" name="rule_recurring_target_type[]" value="<?php echo esc_attr( $rule->target_type ); ?>">
-                                    <input type="hidden" name="rule_recurring_target_id[]" value="<?php echo esc_attr( $rule->target_id ); ?>">
-                                    <span><?php echo esc_html( $rule->target_type . ' #' . $rule->target_id ); ?></span>
-                                <?php endif; ?>
-                            </td>
-                            <td>
-                                <select name="rule_recurring_discount_type[]">
-                                    <option value="recurring_fee" <?php selected( $rule->discount_type, 'recurring_fee' ); ?>><?php esc_html_e( '固定金額 (NT$)', 'ccm' ); ?></option>
-                                    <option value="recurring_percent" <?php selected( $rule->discount_type, 'recurring_percent' ); ?>><?php esc_html_e( '百分比 (%)', 'ccm' ); ?></option>
-                                </select>
-                            </td>
-                            <td>
-                                <input type="number" name="rule_recurring_amount[]" step="1" min="0"
-                                       value="<?php echo esc_attr( $rule->discount_amount ); ?>" style="width:100px;">
-                            </td>
-                            <td>
-                                <button type="button" class="button ccm-remove-discount-row"><?php esc_html_e( '移除', 'ccm' ); ?></button>
-                            </td>
-                        </tr>
-                    <?php endforeach; ?>
+                    <?php ccm_render_sub_rules( $coupon_rules['recurring'], 'recurring', 'recurring_fee', 'recurring_percent' ); ?>
                 </tbody>
             </table>
-            <p><button type="button" class="button ccm-add-sub-rule" data-section="recurring">+ <?php esc_html_e( '新增續訂費折扣', 'ccm' ); ?></button></p>
+            <p>
+                <button type="button" class="button ccm-add-sub-rule" data-section="recurring">+ <?php esc_html_e( '新增預設續訂費折扣', 'ccm' ); ?></button>
+                <button type="button" class="button ccm-add-sub-product-rule" data-section="recurring">+ <?php esc_html_e( '新增指定商品續訂費折扣', 'ccm' ); ?></button>
+            </p>
         </div>
         <?php endif; ?>
 
@@ -324,6 +332,7 @@
             </tr>
         </template>
 
+        <!-- Subscription default templates -->
         <template id="ccm-sub-rule-template-signup">
             <tr class="ccm-discount-row">
                 <td>
@@ -348,6 +357,51 @@
                     <em><?php esc_html_e( '所有訂閱商品（預設）', 'ccm' ); ?></em>
                     <input type="hidden" name="rule_recurring_target_type[]" value="all">
                     <input type="hidden" name="rule_recurring_target_id[]" value="0">
+                </td>
+                <td>
+                    <select name="rule_recurring_discount_type[]">
+                        <option value="recurring_fee"><?php esc_html_e( '固定金額 (NT$)', 'ccm' ); ?></option>
+                        <option value="recurring_percent"><?php esc_html_e( '百分比 (%)', 'ccm' ); ?></option>
+                    </select>
+                </td>
+                <td><input type="number" name="rule_recurring_amount[]" step="1" min="0" style="width:100px;"></td>
+                <td><button type="button" class="button ccm-remove-discount-row"><?php esc_html_e( '移除', 'ccm' ); ?></button></td>
+            </tr>
+        </template>
+
+        <!-- Subscription per-product templates -->
+        <template id="ccm-sub-product-rule-template-signup">
+            <tr class="ccm-discount-row">
+                <td>
+                    <select name="rule_signup_target_type[]" class="ccm-target-type-select" style="width:100px;">
+                        <option value="product"><?php esc_html_e( '商品', 'ccm' ); ?></option>
+                        <option value="variation"><?php esc_html_e( '變化', 'ccm' ); ?></option>
+                        <option value="category"><?php esc_html_e( '分類', 'ccm' ); ?></option>
+                    </select>
+                    <input type="text" class="ccm-autocomplete" data-type="products" placeholder="<?php esc_attr_e( '搜尋商品...', 'ccm' ); ?>" style="width:calc(100% - 110px);">
+                    <input type="hidden" name="rule_signup_target_id[]" value="">
+                </td>
+                <td>
+                    <select name="rule_signup_discount_type[]">
+                        <option value="sign_up_fee"><?php esc_html_e( '固定金額 (NT$)', 'ccm' ); ?></option>
+                        <option value="sign_up_percent"><?php esc_html_e( '百分比 (%)', 'ccm' ); ?></option>
+                    </select>
+                </td>
+                <td><input type="number" name="rule_signup_amount[]" step="1" min="0" style="width:100px;"></td>
+                <td><button type="button" class="button ccm-remove-discount-row"><?php esc_html_e( '移除', 'ccm' ); ?></button></td>
+            </tr>
+        </template>
+
+        <template id="ccm-sub-product-rule-template-recurring">
+            <tr class="ccm-discount-row">
+                <td>
+                    <select name="rule_recurring_target_type[]" class="ccm-target-type-select" style="width:100px;">
+                        <option value="product"><?php esc_html_e( '商品', 'ccm' ); ?></option>
+                        <option value="variation"><?php esc_html_e( '變化', 'ccm' ); ?></option>
+                        <option value="category"><?php esc_html_e( '分類', 'ccm' ); ?></option>
+                    </select>
+                    <input type="text" class="ccm-autocomplete" data-type="products" placeholder="<?php esc_attr_e( '搜尋商品...', 'ccm' ); ?>" style="width:calc(100% - 110px);">
+                    <input type="hidden" name="rule_recurring_target_id[]" value="">
                 </td>
                 <td>
                     <select name="rule_recurring_discount_type[]">

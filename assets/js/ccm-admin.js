@@ -280,13 +280,25 @@
             $newRow.find('.ccm-autocomplete').first().focus();
         });
 
-        // Add subscription rule rows
+        // Add subscription default rule rows
         $(document).on('click', '.ccm-add-sub-rule', function () {
             var section = $(this).data('section');
             var tpl = document.getElementById('ccm-sub-rule-template-' + section);
             if (!tpl) return;
             var clone = tpl.content.cloneNode(true);
             $('#ccm-' + section + '-rules-body').append(clone);
+        });
+
+        // Add subscription per-product rule rows
+        $(document).on('click', '.ccm-add-sub-product-rule', function () {
+            var section = $(this).data('section');
+            var tpl = document.getElementById('ccm-sub-product-rule-template-' + section);
+            if (!tpl) return;
+            var clone = tpl.content.cloneNode(true);
+            $('#ccm-' + section + '-rules-body').append(clone);
+            var $newRow = $('#ccm-' + section + '-rules-body tr:last');
+            $newRow.find('.ccm-autocomplete').each(function () { initAutocomplete($(this)); });
+            $newRow.find('.ccm-autocomplete').first().focus();
         });
 
         // Remove discount row
