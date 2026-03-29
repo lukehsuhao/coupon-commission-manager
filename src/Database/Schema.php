@@ -22,6 +22,8 @@ class Schema {
             name VARCHAR(255) NOT NULL,
             email VARCHAR(255) DEFAULT NULL,
             phone VARCHAR(50) DEFAULT NULL,
+            company_name VARCHAR(255) DEFAULT NULL,
+            tax_id VARCHAR(20) DEFAULT NULL,
             bank_name VARCHAR(255) DEFAULT NULL,
             bank_account VARCHAR(100) DEFAULT NULL,
             bank_account_name VARCHAR(255) DEFAULT NULL,

@@ -143,6 +143,24 @@ class CommissionNotificationService {
     }
 
     /**
+     * Build template variables from partner and log data.
+     */
+    private static function build_vars( object $partner, array $logs, float $total, string $details_html ): array {
+        return [
+            'partner_name'       => $partner->name ?? '',
+            'commission_details' => $details_html,
+            'commission_total'   => number_format( $total ),
+            'company_name'       => $partner->company_name ?? '',
+            'tax_id'             => $partner->tax_id ?? '',
+            'bank_name'          => $partner->bank_name ?? '',
+            'bank_account'       => $partner->bank_account ?? '',
+            'bank_account_name'  => $partner->bank_account_name ?? '',
+            'site_name'          => get_bloginfo( 'name' ),
+            'site_url'           => home_url(),
+        ];
+    }
+
+    /**
      * Replace variables in template.
      */
     public static function replace_vars( string $template, array $vars ): string {
@@ -180,14 +198,7 @@ class CommissionNotificationService {
             if ( ! $partner ) continue;
 
             $details_html = self::build_details_html( $data['logs'] );
-
-            $vars = [
-                'partner_name'       => $partner->name,
-                'commission_details' => $details_html,
-                'commission_total'   => number_format( $data['total'] ),
-                'site_name'          => get_bloginfo( 'name' ),
-                'site_url'           => home_url(),
-            ];
+            $vars = self::build_vars( $partner, $data['logs'], $data['total'], $details_html );
 
             $body_template = $templates['body'];
             // Split body into text parts and the details table
@@ -246,24 +257,13 @@ class CommissionNotificationService {
             $details_html = self::build_details_html( $data['logs'] );
             $send_to = ! empty( $overrides[ $pid ]['email'] ) ? $overrides[ $pid ]['email'] : $partner->email;
 
+            $vars = self::build_vars( $partner, $data['logs'], $data['total'], $details_html );
+
             if ( isset( $overrides[ $pid ] ) ) {
                 $subject   = $overrides[ $pid ]['subject'];
                 $body_text = $overrides[ $pid ]['body_text'] ?? '';
-
-                // Replace {commission_details} in the text with the HTML table
-                $vars = [
-                    'commission_details' => $details_html,
-                    'commission_total'   => number_format( $data['total'] ),
-                ];
                 $body_html = self::smart_nl2br( self::replace_vars( $body_text, $vars ) );
             } else {
-                $vars = [
-                    'partner_name'       => $partner->name,
-                    'commission_details' => $details_html,
-                    'commission_total'   => number_format( $data['total'] ),
-                    'site_name'          => get_bloginfo( 'name' ),
-                    'site_url'           => home_url(),
-                ];
                 $subject   = self::replace_vars( $templates['subject'], $vars );
                 $body_html = self::smart_nl2br( self::replace_vars( $templates['body'], $vars ) );
             }

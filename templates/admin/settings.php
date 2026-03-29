@@ -115,7 +115,7 @@
         </table>
 
         <h2><?php esc_html_e( '分潤通知信模板', 'ccm' ); ?></h2>
-        <p class="description"><?php esc_html_e( '當標記分潤為「已付」時寄出的通知信。可用變數：{partner_name}、{commission_details}、{commission_total}、{site_name}、{site_url}。', 'ccm' ); ?></p>
+        <p class="description"><?php esc_html_e( '當標記分潤為「已付」時寄出的通知信。可用變數：{partner_name}、{commission_details}、{commission_total}、{company_name}、{tax_id}、{bank_name}、{bank_account}、{bank_account_name}、{site_name}、{site_url}。', 'ccm' ); ?></p>
 
         <?php
         $default_commission_subject  = \CouponCommissionManager\Admin\Pages\SettingsPage::default_commission_subject();

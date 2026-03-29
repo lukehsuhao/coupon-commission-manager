@@ -54,6 +54,13 @@ class SettingsPage {
 
 分潤總金額：NT$ {commission_total}
 
+匯款資訊：
+公司名稱：{company_name}
+統一編號：{tax_id}
+銀行名稱：{bank_name}
+銀行帳號：{bank_account}
+銀行戶名：{bank_account_name}
+
 如有任何問題，請與我們聯繫。
 
 {site_name}
