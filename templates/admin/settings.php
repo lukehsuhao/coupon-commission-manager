@@ -114,6 +114,37 @@
             </tr>
         </table>
 
+        <h2><?php esc_html_e( '分潤通知信模板', 'ccm' ); ?></h2>
+        <p class="description"><?php esc_html_e( '當標記分潤為「已付」時寄出的通知信。可用變數：{partner_name}、{commission_details}、{commission_total}、{site_name}、{site_url}。', 'ccm' ); ?></p>
+
+        <?php
+        $default_commission_subject  = \CouponCommissionManager\Admin\Pages\SettingsPage::default_commission_subject();
+        $default_commission_template = \CouponCommissionManager\Admin\Pages\SettingsPage::default_commission_template();
+        $current_commission_subject  = $settings['email_commission_subject'] ?? '';
+        $current_commission_template = $settings['email_commission_template'] ?? '';
+        ?>
+
+        <table class="form-table">
+            <tr>
+                <th scope="row"><label for="email_commission_subject"><?php esc_html_e( '信件主旨', 'ccm' ); ?></label></th>
+                <td>
+                    <input type="text" id="email_commission_subject" name="email_commission_subject" class="large-text"
+                           value="<?php echo esc_attr( ! empty( $current_commission_subject ) ? $current_commission_subject : $default_commission_subject ); ?>">
+                </td>
+            </tr>
+            <tr>
+                <th scope="row"><label for="email_commission_template"><?php esc_html_e( '信件內容', 'ccm' ); ?></label></th>
+                <td>
+                    <textarea id="email_commission_template" name="email_commission_template" rows="14" class="large-text"><?php
+                        echo esc_textarea( ! empty( $current_commission_template ) ? $current_commission_template : $default_commission_template );
+                    ?></textarea>
+                    <p>
+                        <button type="button" class="button button-small" onclick="document.getElementById('email_commission_subject').value = <?php echo esc_attr( wp_json_encode( $default_commission_subject ) ); ?>; document.getElementById('email_commission_template').value = <?php echo esc_attr( wp_json_encode( $default_commission_template ) ); ?>;"><?php esc_html_e( '還原為預設模板', 'ccm' ); ?></button>
+                    </p>
+                </td>
+            </tr>
+        </table>
+
         <?php submit_button( __( '儲存設定', 'ccm' ) ); ?>
     </form>
 </div>

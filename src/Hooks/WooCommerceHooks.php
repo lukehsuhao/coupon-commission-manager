@@ -19,6 +19,10 @@ class WooCommerceHooks {
         add_action( 'wp_ajax_ccm_search_coupons', [ self::class, 'ajax_search_coupons' ] );
         add_action( 'wp_ajax_ccm_create_coupon', [ self::class, 'ajax_create_coupon' ] );
 
+        // Commission notification AJAX
+        add_action( 'wp_ajax_ccm_preview_commission_email', [ self::class, 'ajax_preview_commission_email' ] );
+        add_action( 'wp_ajax_ccm_send_commission_email', [ self::class, 'ajax_send_commission_email' ] );
+
         // Notification on new partner application
         add_action( 'ccm_partner_application_submitted', [ self::class, 'notify_admin_new_application' ] );
     }
@@ -237,6 +241,54 @@ class WooCommerceHooks {
         $coupon->save();
 
         wp_send_json_success( [ 'id' => $coupon->get_id(), 'code' => strtoupper( $code ) ] );
+    }
+
+    /**
+     * AJAX: Preview commission notification emails.
+     */
+    public static function ajax_preview_commission_email(): void {
+        check_ajax_referer( 'ccm_admin_action', 'nonce' );
+        if ( ! current_user_can( 'manage_woocommerce' ) ) {
+            wp_send_json_error( [ 'message' => '權限不足' ] );
+        }
+
+        $log_ids = array_map( 'absint', $_POST['log_ids'] ?? [] );
+        if ( empty( $log_ids ) ) {
+            wp_send_json_error( [ 'message' => '未選擇任何分潤紀錄' ] );
+        }
+
+        $previews = \CouponCommissionManager\Services\CommissionNotificationService::preview( $log_ids );
+        wp_send_json_success( [ 'partners' => $previews ] );
+    }
+
+    /**
+     * AJAX: Send commission notification emails and mark as paid.
+     */
+    public static function ajax_send_commission_email(): void {
+        check_ajax_referer( 'ccm_admin_action', 'nonce' );
+        if ( ! current_user_can( 'manage_woocommerce' ) ) {
+            wp_send_json_error( [ 'message' => '權限不足' ] );
+        }
+
+        $log_ids   = array_map( 'absint', $_POST['log_ids'] ?? [] );
+        $overrides = [];
+
+        // Parse per-partner overrides from the modal form
+        if ( ! empty( $_POST['overrides'] ) && is_array( $_POST['overrides'] ) ) {
+            foreach ( $_POST['overrides'] as $pid => $override ) {
+                $overrides[ (int) $pid ] = [
+                    'subject' => sanitize_text_field( $override['subject'] ?? '' ),
+                    'body'    => sanitize_textarea_field( $override['body'] ?? '' ),
+                ];
+            }
+        }
+
+        if ( empty( $log_ids ) ) {
+            wp_send_json_error( [ 'message' => '未選擇任何分潤紀錄' ] );
+        }
+
+        $results = \CouponCommissionManager\Services\CommissionNotificationService::send_and_mark_paid( $log_ids, $overrides );
+        wp_send_json_success( [ 'results' => $results ] );
     }
 
     /**
