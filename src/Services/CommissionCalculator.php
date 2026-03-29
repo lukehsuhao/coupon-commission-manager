@@ -53,10 +53,15 @@ class CommissionCalculator {
                     continue;
                 }
 
-                $product_id = $product->get_parent_id() ?: $product->get_id();
+                $variation_id = $product->get_id();
+                $parent_id    = $product->get_parent_id() ?: $product->get_id();
 
-                // Find matching rule: specific product first, then fallback to default (product_id=0)
-                $rule = $rules_map[ $product_id ] ?? $rules_map[0] ?? null;
+                // Find matching rule priority:
+                // 1. Exact variation ID match
+                // 2. Parent product ID match
+                // 3. Default (product_id=0)
+                $rule = $rules_map[ $variation_id ] ?? $rules_map[ $parent_id ] ?? $rules_map[0] ?? null;
+                $product_id = isset( $rules_map[ $variation_id ] ) ? $variation_id : $parent_id;
                 if ( ! $rule ) {
                     continue;
                 }

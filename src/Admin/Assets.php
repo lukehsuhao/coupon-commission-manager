@@ -25,7 +25,7 @@ class Assets {
         wp_enqueue_script(
             'ccm-admin',
             CCM_PLUGIN_URL . 'assets/js/ccm-admin.js',
-            [ 'jquery', 'jquery-ui-datepicker' ],
+            [ 'jquery', 'jquery-ui-datepicker', 'jquery-ui-autocomplete' ],
             CCM_VERSION,
             true
         );

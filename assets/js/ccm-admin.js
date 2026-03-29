@@ -23,7 +23,7 @@
                     },
                 });
             },
-            minLength: 2,
+            minLength: 0,
             select: function (event, ui) {
                 // Handle "create new coupon" option
                 if (ui.item.is_new && ui.item.new_code) {
@@ -58,16 +58,29 @@
             },
         });
 
-        // Custom rendering to highlight the "create new" option
+        // Custom rendering to highlight the "create new" option and variations
         $input.autocomplete('instance')._renderItem = function (ul, item) {
             var label = item.label;
             if (item.is_new) {
                 label = '<strong style="color:#2271b1;">' + $('<span>').text(item.label).html() + '</strong>';
             } else {
                 label = $('<span>').text(item.label).html();
+                // Indent variations with a dash
+                if (label.indexOf(' — ') > -1) {
+                    label = '<span style="padding-left:12px;color:#555;">' + label + '</span>';
+                }
             }
             return $('<li>').append('<div>' + label + '</div>').appendTo(ul);
         };
+
+        // Show dropdown on focus (for product type, show latest products)
+        if (type === 'products') {
+            $input.on('focus', function () {
+                if ($input.val() === '') {
+                    $input.autocomplete('search', '');
+                }
+            });
+        }
 
         $input.on('input', function () {
             if ($(this).val() === '') {
@@ -102,6 +115,9 @@
             $newRow.find('.ccm-autocomplete').each(function () {
                 initAutocomplete($(this));
             });
+
+            // Auto-focus the new search input
+            $newRow.find('.ccm-autocomplete').first().focus();
         });
 
         // Remove product row

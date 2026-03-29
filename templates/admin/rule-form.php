@@ -78,9 +78,21 @@
                                     <input type="hidden" name="product_ids[]" value="0">
                                 <?php else :
                                     $product = wc_get_product( $rule->product_id );
+                                    $display_name = '';
+                                    if ( $product ) {
+                                        if ( $product->is_type( 'variation' ) || $product->is_type( 'subscription_variation' ) ) {
+                                            $parent = wc_get_product( $product->get_parent_id() );
+                                            $parent_name = $parent ? $parent->get_name() : '#' . $product->get_parent_id();
+                                            $attrs = $product->get_variation_attributes();
+                                            $attr_str = implode( ', ', array_filter( $attrs ) );
+                                            $display_name = $parent_name . ( $attr_str ? ' — ' . $attr_str : ' — 變化 #' . $product->get_id() );
+                                        } else {
+                                            $display_name = $product->get_name();
+                                        }
+                                    }
                                 ?>
                                     <input type="text" class="regular-text ccm-autocomplete" data-type="products"
-                                           value="<?php echo esc_attr( $product ? $product->get_name() : '' ); ?>"
+                                           value="<?php echo esc_attr( $display_name ); ?>"
                                            placeholder="<?php esc_attr_e( '搜尋商品...', 'ccm' ); ?>">
                                     <input type="hidden" name="product_ids[]" value="<?php echo esc_attr( $rule->product_id ); ?>">
                                 <?php endif; ?>
