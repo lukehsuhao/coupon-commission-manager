@@ -69,8 +69,8 @@
             return $('<li>').append('<div>' + label + '</div>').appendTo(ul);
         };
 
-        if (type === 'products') {
-            $input.on('focus', function () {
+        if (type === 'products' || type === 'coupons' || type === 'categories') {
+            $input.on('focus click', function () {
                 if ($input.val() === '') {
                     $input.autocomplete('search', '');
                 }

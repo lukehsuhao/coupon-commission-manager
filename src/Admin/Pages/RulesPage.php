@@ -80,20 +80,29 @@ class RulesPage {
                     CommissionRule::delete_by_partner_coupon( $edit_partner_id, $edit_coupon_id );
                 }
 
-                $has_error = false;
+                $has_error    = false;
+                $saved_count  = 0;
                 for ( $i = 0; $i < count( $product_ids ); $i++ ) {
-                    $amt = $amounts[ $i ] ?? 0;
-                    if ( $amt <= 0 ) {
+                    $amt = (float) ( $amounts[ $i ] ?? 0 );
+                    $pid = (int) $product_ids[ $i ];
+                    // Negative values are invalid
+                    if ( $amt < 0 ) {
+                        continue;
+                    }
+                    // Skip 0 for product-specific rules (meaningless); allow 0 for default (product_id=0)
+                    if ( $amt === 0.0 && $pid !== 0 ) {
                         continue;
                     }
                     $result = CommissionRule::create( [
                         'partner_id'        => $partner_id,
                         'coupon_id'         => $coupon_id,
-                        'product_id'        => $product_ids[ $i ],
+                        'product_id'        => $pid,
                         'commission_amount' => $amt,
                     ] );
                     if ( false === $result ) {
                         $has_error = true;
+                    } else {
+                        $saved_count++;
                     }
                 }
 

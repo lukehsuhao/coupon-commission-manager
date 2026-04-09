@@ -50,7 +50,7 @@
                         <input type="hidden" name="coupon_id" value="<?php echo esc_attr( $edit_coupon_id ); ?>">
                     <?php else : ?>
                         <input type="text" id="coupon_search" class="regular-text ccm-autocomplete" data-type="coupons"
-                               placeholder="<?php esc_attr_e( '輸入折扣碼搜尋...', 'ccm' ); ?>">
+                               placeholder="<?php esc_attr_e( '點擊選擇或輸入折扣碼...', 'ccm' ); ?>" autocomplete="off">
                         <input type="hidden" id="coupon_id" name="coupon_id" value="">
                     <?php endif; ?>
                 </td>
@@ -69,60 +69,66 @@
                 </tr>
             </thead>
             <tbody id="ccm-rules-body">
-                <?php if ( ! empty( $existing_rules ) ) : ?>
-                    <?php foreach ( $existing_rules as $idx => $rule ) : ?>
-                        <tr class="ccm-rule-row">
-                            <td>
-                                <?php if ( 0 === (int) $rule->product_id ) : ?>
-                                    <em><?php esc_html_e( '其他商品（預設）', 'ccm' ); ?></em>
-                                    <input type="hidden" name="product_ids[]" value="0">
-                                <?php else :
-                                    $product = wc_get_product( $rule->product_id );
-                                    $display_name = '';
-                                    if ( $product ) {
-                                        if ( $product->is_type( 'variation' ) || $product->is_type( 'subscription_variation' ) ) {
-                                            $parent = wc_get_product( $product->get_parent_id() );
-                                            $parent_name = $parent ? $parent->get_name() : '#' . $product->get_parent_id();
-                                            $attrs = $product->get_variation_attributes();
-                                            $attr_str = implode( ', ', array_filter( $attrs ) );
-                                            $display_name = $parent_name . ( $attr_str ? ' — ' . $attr_str : ' — 變化 #' . $product->get_id() );
-                                        } else {
-                                            $display_name = $product->get_name();
-                                        }
-                                    }
-                                ?>
-                                    <input type="text" class="regular-text ccm-autocomplete" data-type="products"
-                                           value="<?php echo esc_attr( $display_name ); ?>"
-                                           placeholder="<?php esc_attr_e( '搜尋商品...', 'ccm' ); ?>">
-                                    <input type="hidden" name="product_ids[]" value="<?php echo esc_attr( $rule->product_id ); ?>">
-                                <?php endif; ?>
-                            </td>
-                            <td>
-                                <span>NT$</span>
-                                <input type="number" name="amounts[]" step="1" min="0"
-                                       value="<?php echo esc_attr( (int) $rule->commission_amount ); ?>" style="width:120px;" required>
-                            </td>
-                            <td>
-                                <?php if ( 0 !== (int) $rule->product_id ) : ?>
-                                    <button type="button" class="button ccm-remove-row"><?php esc_html_e( '移除', 'ccm' ); ?></button>
-                                <?php endif; ?>
-                            </td>
-                        </tr>
-                    <?php endforeach; ?>
-                <?php else : ?>
-                    <!-- Default row for "all products" -->
+                <?php
+                // Separate default rule from product-specific rules
+                $default_amount = 0;
+                $product_rules  = [];
+                if ( ! empty( $existing_rules ) ) {
+                    foreach ( $existing_rules as $rule ) {
+                        if ( 0 === (int) $rule->product_id ) {
+                            $default_amount = (int) $rule->commission_amount;
+                        } else {
+                            $product_rules[] = $rule;
+                        }
+                    }
+                }
+                ?>
+                <!-- Default row (always shown) -->
+                <tr class="ccm-rule-row">
+                    <td>
+                        <em><?php esc_html_e( '其他商品（預設）', 'ccm' ); ?></em>
+                        <input type="hidden" name="product_ids[]" value="0">
+                    </td>
+                    <td>
+                        <span>NT$</span>
+                        <input type="number" name="amounts[]" step="1" min="0"
+                               value="<?php echo esc_attr( $default_amount ); ?>" style="width:120px;" placeholder="0">
+                        <p class="description" style="margin:4px 0 0;font-size:11px;color:#666;"><?php esc_html_e( '填 0 表示未指定的商品不分潤', 'ccm' ); ?></p>
+                    </td>
+                    <td></td>
+                </tr>
+                <?php foreach ( $product_rules as $rule ) :
+                    $product      = wc_get_product( $rule->product_id );
+                    $display_name = '';
+                    if ( $product ) {
+                        if ( $product->is_type( 'variation' ) || $product->is_type( 'subscription_variation' ) ) {
+                            $parent      = wc_get_product( $product->get_parent_id() );
+                            $parent_name = $parent ? $parent->get_name() : '#' . $product->get_parent_id();
+                            $attrs       = $product->get_variation_attributes();
+                            $attr_str    = implode( ', ', array_filter( $attrs ) );
+                            $display_name = $parent_name . ( $attr_str ? ' — ' . $attr_str : ' — 變化 #' . $product->get_id() );
+                        } else {
+                            $display_name = $product->get_name();
+                        }
+                    }
+                ?>
                     <tr class="ccm-rule-row">
                         <td>
-                            <em><?php esc_html_e( '其他商品（預設）', 'ccm' ); ?></em>
-                            <input type="hidden" name="product_ids[]" value="0">
+                            <input type="text" class="regular-text ccm-autocomplete" data-type="products"
+                                   value="<?php echo esc_attr( $display_name ); ?>"
+                                   placeholder="<?php esc_attr_e( '搜尋商品...', 'ccm' ); ?>">
+                            <input type="hidden" name="product_ids[]" value="<?php echo esc_attr( $rule->product_id ); ?>">
                         </td>
                         <td>
                             <span>NT$</span>
-                            <input type="number" name="amounts[]" step="1" min="0" value="" style="width:120px;" placeholder="0" required>
+                            <input type="number" name="amounts[]" step="1" min="0"
+                                   value="<?php echo esc_attr( (int) $rule->commission_amount ); ?>" style="width:120px;" required>
                         </td>
-                        <td></td>
+                        <td>
+                            <button type="button" class="button ccm-remove-row"><?php esc_html_e( '移除', 'ccm' ); ?></button>
+                        </td>
                     </tr>
-                <?php endif; ?>
+                <?php endforeach; ?>
             </tbody>
         </table>
 

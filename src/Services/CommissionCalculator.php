@@ -70,6 +70,12 @@ class CommissionCalculator {
                 $commission_per   = (float) $rule->commission_amount;
                 $commission_total = $commission_per * $quantity;
 
+                // Skip logging if commission is 0 (e.g. default rule used to explicitly
+                // exclude unmatched products from commission).
+                if ( $commission_total <= 0 ) {
+                    continue;
+                }
+
                 CommissionLog::create( [
                     'partner_id'          => $partner_id,
                     'rule_id'             => (int) $rule->id,

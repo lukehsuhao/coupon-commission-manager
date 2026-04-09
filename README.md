@@ -2,7 +2,7 @@
 
 WooCommerce 折扣碼分潤管理外掛，專為透過折扣碼進行分潤的使用情境設計。
 
-**Author:** [Powerhouse](https://powerhouse.cloud) | **Version:** 1.2.1 | **License:** GPL-2.0-or-later
+**Author:** [Powerhouse](https://powerhouse.cloud) | **Version:** 1.2.2 | **License:** GPL-2.0-or-later
 
 你只需要建立夥伴、建立折扣碼並設定折扣規則、設定分潤金額，當顧客使用折扣碼下單並完成付款後，系統會自動產生分潤紀錄。付款時自動跳出通知信編輯視窗，一鍵寄出分潤通知給夥伴。
 

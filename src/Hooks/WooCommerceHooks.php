@@ -204,17 +204,25 @@ class WooCommerceHooks {
         }
 
         $term = isset( $_GET['term'] ) ? sanitize_text_field( wp_unslash( $_GET['term'] ) ) : '';
-        if ( empty( $term ) ) {
-            wp_send_json( [] );
-        }
 
         global $wpdb;
-        $results = $wpdb->get_results( $wpdb->prepare(
-            "SELECT ID, post_title FROM {$wpdb->posts}
-             WHERE post_type = 'shop_coupon' AND post_status = 'publish'
-             AND post_title LIKE %s LIMIT 20",
-            '%' . $wpdb->esc_like( $term ) . '%'
-        ) );
+
+        if ( empty( $term ) ) {
+            // No search term: return 20 most recently created coupons
+            $results = $wpdb->get_results(
+                "SELECT ID, post_title FROM {$wpdb->posts}
+                 WHERE post_type = 'shop_coupon' AND post_status = 'publish'
+                 ORDER BY ID DESC LIMIT 20"
+            );
+        } else {
+            $results = $wpdb->get_results( $wpdb->prepare(
+                "SELECT ID, post_title FROM {$wpdb->posts}
+                 WHERE post_type = 'shop_coupon' AND post_status = 'publish'
+                 AND post_title LIKE %s
+                 ORDER BY ID DESC LIMIT 20",
+                '%' . $wpdb->esc_like( $term ) . '%'
+            ) );
+        }
 
         $data = [];
         foreach ( $results as $row ) {
