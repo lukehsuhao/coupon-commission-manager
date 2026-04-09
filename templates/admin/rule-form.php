@@ -99,7 +99,7 @@
                             </td>
                             <td>
                                 <span>NT$</span>
-                                <input type="number" name="amounts[]" step="1" min="1"
+                                <input type="number" name="amounts[]" step="1" min="0"
                                        value="<?php echo esc_attr( (int) $rule->commission_amount ); ?>" style="width:120px;" required>
                             </td>
                             <td>
@@ -118,7 +118,7 @@
                         </td>
                         <td>
                             <span>NT$</span>
-                            <input type="number" name="amounts[]" step="1" min="1" value="" style="width:120px;" placeholder="0" required>
+                            <input type="number" name="amounts[]" step="1" min="0" value="" style="width:120px;" placeholder="0" required>
                         </td>
                         <td></td>
                     </tr>
@@ -140,7 +140,7 @@
                 </td>
                 <td>
                     <span>NT$</span>
-                    <input type="number" name="amounts[]" step="1" min="1" value="" style="width:120px;" required>
+                    <input type="number" name="amounts[]" step="1" min="0" value="" style="width:120px;" required>
                 </td>
                 <td>
                     <button type="button" class="button ccm-remove-row"><?php esc_html_e( '移除', 'ccm' ); ?></button>

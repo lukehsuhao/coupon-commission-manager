@@ -3,7 +3,7 @@
  * Plugin Name: WooCommerce 折扣碼分潤管理 — Coupon Commission Manager
  * Plugin URI:  https://powerhouse.cloud
  * Description: WooCommerce 折扣碼分潤管理 — 追蹤折扣碼分潤、管理夥伴付款狀態、匯出 CSV。
- * Version:     1.2.0
+ * Version:     1.2.1
  * Author:      Powerhouse
  * Author URI:  https://powerhouse.cloud
  * Text Domain: ccm
@@ -18,7 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-define( 'CCM_VERSION', '1.2.0' );
+define( 'CCM_VERSION', '1.2.1' );
 define( 'CCM_PLUGIN_FILE', __FILE__ );
 define( 'CCM_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'CCM_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
